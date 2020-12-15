@@ -1,0 +1,30 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  info:
+    git:
+      mode: full
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+  application:
+    name: Demo
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: true
+
+logging:
+  level:
+    root: WARN
+    com.example.demo: DEBUG
+
+server:
+  error:
+    include-exception: true
+    include-stacktrace: always
