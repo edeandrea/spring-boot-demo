@@ -80,6 +80,7 @@ class PersonAPITests {
 				.accept(MediaType.APPLICATION_JSON)
 		)
 			.andExpect(handler().handlerType(PersonAPI.class))
+			.andExpect(handler().method(ReflectionUtils.findMethod(PersonAPI.class, "findById", Long.TYPE)))
 			.andExpect(status().isBadRequest());
 
 		verifyNoInteractions(this.personRepository);
