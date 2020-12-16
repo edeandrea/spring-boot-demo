@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "PEOPLE")
@@ -16,6 +17,8 @@ public class Person {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
+
+	@NotEmpty
 	private String ssn;
 
 	public String getName() {
@@ -26,12 +29,22 @@ public class Person {
 		this.name = name;
 	}
 
+	public Person name(String name) {
+		setName(name);
+		return this;
+	}
+
 	public String getSsn() {
 		return this.ssn;
 	}
 
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
+	}
+
+	public Person ssn(String ssn) {
+		setSsn(ssn);
+		return this;
 	}
 
 	@Override
@@ -64,5 +77,10 @@ public class Person {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Person id(Long id) {
+		setId(id);
+		return this;
 	}
 }
