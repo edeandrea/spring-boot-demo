@@ -38,7 +38,7 @@ public class PersonAPI {
 		return ResponseEntity.of(this.personRepository.findById(id));
 	}
 
-	@DeleteMapping(path = "/{id}")
+	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePerson(@PathVariable long id) {
 		this.personRepository.deleteById(id);
