@@ -18,7 +18,7 @@ public class Person {
 	private Long id;
 	private String name;
 
-	@NotEmpty
+	@NotEmpty(message = "SSN must be present!")
 	private String ssn;
 
 	public String getName() {

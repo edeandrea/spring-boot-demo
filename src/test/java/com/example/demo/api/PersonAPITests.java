@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.ReflectionUtils;
 
 import com.example.demo.domain.Person;
 import com.example.demo.repository.PersonRepository;
@@ -44,11 +45,59 @@ class PersonAPITests {
 			.accept(MediaType.APPLICATION_JSON)
 		)
 			.andExpect(handler().handlerType(PersonAPI.class))
+			.andExpect(handler().method(ReflectionUtils.findMethod(PersonAPI.class, "getAll")))
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$", Matchers.hasSize(1)));
+			.andExpect(jsonPath("$", Matchers.hasSize(1)))
+			.andExpect(jsonPath("$[0]").exists())
+			.andExpect(jsonPath("$[0].id").value(1L))
+			.andExpect(jsonPath("$[0].name").value("Eric"))
+			.andExpect(jsonPath("$[0].ssn").value("123456987"));
 
-		verifyNoMoreInteractions(this.personRepository);
+		verify(this.personRepository, only()).findAll();
+	}
+
+	@Test
+	public void invalidPersonNoSsn() throws Exception {
+		this.mockMvc.perform(
+			request(HttpMethod.POST, "/people")
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\": \"Eric\"}")
+		)
+			.andExpect(handler().handlerType(PersonAPI.class))
+			.andExpect(handler().method(ReflectionUtils.findMethod(PersonAPI.class, "addPerson", Person.class)))
+			.andExpect(status().isBadRequest());
+
+		verifyNoInteractions(this.personRepository);
+	}
+
+	@Test
+	public void validPerson() throws Exception {
+		given(this.personRepository.save(any(Person.class)))
+			.willReturn(
+				new Person()
+					.id(1L)
+					.name("Eric")
+					.ssn("123456987")
+			);
+
+		this.mockMvc.perform(
+			request(HttpMethod.POST, "/people")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"name\": \"Eric\", \"ssn\": \"123456987\"}")
+		)
+			.andExpect(handler().handlerType(PersonAPI.class))
+			.andExpect(handler().method(ReflectionUtils.findMethod(PersonAPI.class, "addPerson", Person.class)))
+			.andExpect(status().isOk())
+			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").exists())
+			.andExpect(jsonPath("$.id").value(1L))
+			.andExpect(jsonPath("$.name").value("Eric"))
+			.andExpect(jsonPath("$.ssn").value("123456987"));
+
+		verify(this.personRepository, only()).save(any(Person.class));
 	}
 }
