@@ -3,10 +3,12 @@ package com.example.demo.api;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,7 @@ import com.example.demo.repository.PersonRepository;
 
 @RestController
 @RequestMapping("/people")
+@Validated
 public class PersonAPI {
 	private final PersonRepository personRepository;
 
@@ -34,7 +37,7 @@ public class PersonAPI {
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Person> findById(@PathVariable long id) {
+	public ResponseEntity<Person> findById(@PathVariable @Min(0L) long id) {
 		return ResponseEntity.of(this.personRepository.findById(id));
 	}
 

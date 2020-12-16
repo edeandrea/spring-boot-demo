@@ -74,6 +74,18 @@ class PersonAPITests {
 	}
 
 	@Test
+	public void findByIdInvalidId() throws Exception {
+		this.mockMvc.perform(
+			request(HttpMethod.GET, "/people/{id}", -1L)
+				.accept(MediaType.APPLICATION_JSON)
+		)
+			.andExpect(handler().handlerType(PersonAPI.class))
+			.andExpect(status().isBadRequest());
+
+		verifyNoInteractions(this.personRepository);
+	}
+
+	@Test
 	public void validPerson() throws Exception {
 		given(this.personRepository.save(any(Person.class)))
 			.willReturn(
