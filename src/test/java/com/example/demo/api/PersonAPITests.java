@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,22 @@ class PersonAPITests {
 			.andExpect(status().isBadRequest());
 
 		verifyNoInteractions(this.personRepository);
+	}
+
+	@Test
+	public void findDoesntFindAnything() throws Exception {
+		given(this.personRepository.findById(anyLong()))
+			.willReturn(Optional.empty());
+
+		this.mockMvc.perform(
+			request(HttpMethod.GET, "/people/{id}", 1L)
+				.accept(MediaType.APPLICATION_JSON)
+		)
+			.andExpect(handler().handlerType(PersonAPI.class))
+			.andExpect(handler().method(ReflectionUtils.findMethod(PersonAPI.class, "findById", Long.TYPE)))
+			.andExpect(status().isNotFound());
+
+		verify(this.personRepository, only()).findById(anyLong());
 	}
 
 	@Test

@@ -3,7 +3,7 @@ package com.example.demo.api;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,7 +37,7 @@ public class PersonAPI {
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Person> findById(@PathVariable @Min(0L) long id) {
+	public ResponseEntity<Person> findById(@PathVariable @PositiveOrZero long id) {
 		return ResponseEntity.of(this.personRepository.findById(id));
 	}
 
